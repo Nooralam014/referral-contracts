@@ -2,9 +2,8 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
-import "../src/NFT.sol";
+import "../src/MyToken.sol";
 
-// This is the test contract for MyToken
 contract MyTokenTest is Test {
     MyToken private myToken;
     address private owner;
@@ -29,16 +28,24 @@ contract MyTokenTest is Test {
     function testSetBaseURI() public {
         string memory newURI = "newBaseURI";
         myToken.setBaseURI(newURI);
-        
+
         string memory baseURI = myToken._baseTokenURI();
 
         assertEq(baseURI, newURI, "Base URI not updated correctly");
     }
 
+    function testTokenURI() public {
+        myToken.safeMint(minter);
+        string memory expectedURI = string(abi.encodePacked("baseURI", "0.json"));
+        string memory tokenURI = myToken.tokenURI(0);
+
+        assertEq(tokenURI, expectedURI, "Token URI not constructed correctly");
+    }
+
     function testMintAndSetBaseURI() public {
         // Mint first token
         myToken.safeMint(minter);
-        
+
         uint256 firstTokenId = 0;
         assertEq(myToken.ownerOf(firstTokenId), minter, "Incorrect first token owner");
 
@@ -51,9 +58,11 @@ contract MyTokenTest is Test {
         // Update base URI
         string memory newURI = "newBaseURI";
         myToken.setBaseURI(newURI);
-        
-        string memory baseURI = myToken._baseTokenURI();
 
-        assertEq(baseURI, newURI, "Base URI not updated correctly");
+        string memory firstTokenURI = myToken.tokenURI(firstTokenId);
+        string memory secondTokenURI = myToken.tokenURI(secondTokenId);
+
+        assertEq(firstTokenURI, string(abi.encodePacked(newURI, firstTokenId.toString(), ".json")), "First token URI not updated correctly");
+        assertEq(secondTokenURI, string(abi.encodePacked(newURI, secondTokenId.toString(), ".json")), "Second token URI not updated correctly");
     }
 }

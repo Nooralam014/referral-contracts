@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol"; // Import the Strings library
 
 contract MyToken is
     ERC721,
@@ -15,10 +16,14 @@ contract MyToken is
     Ownable,
     ERC721Burnable
 {
+    using Strings for uint256; // Use the Strings library
+
     uint256 private _nextTokenId;
     string public _baseTokenURI;
 
-    constructor(address initialOwner) ERC721("MyToken", "MTK") Ownable(initialOwner) {
+    constructor(
+        address initialOwner
+    ) ERC721("MyToken", "MTK") Ownable(initialOwner) {
         _baseTokenURI = "baseURI"; // Initial base URI
     }
 
@@ -43,11 +48,14 @@ contract MyToken is
         _safeMint(to, tokenId);
     }
 
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-
+    function tokenURI(
+        uint256 tokenId
+    ) public view override returns (string memory) {
         string memory baseURI = _baseURI();
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
+        return
+            bytes(baseURI).length > 0
+                ? string(abi.encodePacked(_baseTokenURI, tokenId.toString(), ".json"))
+                : "";
     }
 
     // The following functions are overrides required by Solidity.
