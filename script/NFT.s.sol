@@ -12,6 +12,7 @@ contract MyScript is Script {
         address initialOwner = 0xC5EE6A5a3F78c05636cb3678500287A2c8AcAb12;
 
         MyToken nft = new MyToken(initialOwner);
+        // nft.safeMint(0xC5EE6A5a3F78c05636cb3678500287A2c8AcAb12, "https://gateway.pinata.cloud/ipfs/QmaxDDEkKyLaiMt5BRSXgMWXy4GPzwujR4J6PFLz1V2SbL");
 
         vm.stopBroadcast();
     }
